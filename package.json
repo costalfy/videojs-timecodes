@@ -101,5 +101,9 @@
     "videojs-generator-verify": "~1.2.0",
     "videojs-languages": "^2.0.0",
     "videojs-standard": "^8.0.3"
+  },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/samueleastdev/videojs-timecodes.git"
   }
 }

@@ -3,13 +3,13 @@ import videojs from 'video.js';
 
 const Component = videojs.getComponent('Component');
 
-const ClippingBar = videojs.extend(Component, {
+class ClippingBar extends Component {
 
   constructor(player, options) {
 
-    Component.apply(this, arguments);
+    super(player, options);
 
-  },
+  }
 
   createEl() {
 
@@ -19,6 +19,8 @@ const ClippingBar = videojs.extend(Component, {
     });
   }
 
-});
+}
 
 videojs.registerComponent('ClippingBar', ClippingBar);
+
+export default ClippingBar;

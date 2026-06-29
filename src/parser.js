@@ -1,5 +1,3 @@
-/* global btoa */
-
 // Offsets
 
 export const BIF_INDEX_OFFSET = 64;

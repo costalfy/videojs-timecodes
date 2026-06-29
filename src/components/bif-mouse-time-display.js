@@ -1,6 +1,7 @@
-/* global videojs, document, HTMLElement */
+/* global document, HTMLElement */
 
 /* eslint-disable no-underscore-dangle */
+import videojs from 'video.js';
 import {
   BIFParser
 } from '../parser.js';
@@ -100,7 +101,7 @@ export default class BIFMouseTimeDisplay extends VjsMouseTimeDisplay {
      * @param {function} [options.template]
      */
   configure(options) {
-    this.options_ = videojs.mergeOptions(defaults, this.options_, options);
+    this.options_ = videojs.obj.merge(defaults, this.options_, options);
 
     const {
       data
@@ -226,7 +227,7 @@ export default class BIFMouseTimeDisplay extends VjsMouseTimeDisplay {
 
     }
 
-    this.BIFTime.innerHTML = videojs.formatTime(Math.floor(time));
+    this.BIFTime.innerHTML = videojs.time.formatTime(Math.floor(time));
 
   }
 

@@ -5,7 +5,9 @@ import {
 } from '../package.json';
 
 import './components/clipping-ui.js';
-import noUiSlider from '../node_modules/nouislider/distribute/nouislider.js';
+// nouislider v14 ships as a UMD module without an ES `default` export.
+// Import the whole module as a namespace and use the `create` function via it.
+import * as noUiSlider from 'nouislider';
 
 /* global XMLHttpRequest, document, vis, $ */
 
@@ -67,7 +69,7 @@ class Frames extends Plugin {
 
     super(player, options);
 
-    this.options = videojs.mergeOptions(defaults, options);
+    this.options = videojs.obj.merge(defaults, options);
 
     this.player.ready(() => {
 
@@ -547,14 +549,14 @@ class Frames extends Plugin {
 
     const that = this;
 
-    const TimeDisplay = videojs.extend(MenuButton, {
-      constructor() {
+    class TimeDisplay extends MenuButton {
+      constructor(player, options) {
 
-        MenuButton.apply(this, arguments);
+        super(player, options);
 
         this.addClass('vjs-timecode-menu');
 
-      },
+      }
 
       handleClick() {
 
@@ -563,14 +565,14 @@ class Frames extends Plugin {
         });
 
       }
-    });
+    }
 
-    videojs.registerComponent('timeDisplay', TimeDisplay);
+    videojs.registerComponent('TimeDisplay', TimeDisplay);
 
-    this.player.getChild('controlBar').addChild('timeDisplay', {});
+    this.player.getChild('controlBar').addChild('TimeDisplay', {});
 
     this.player.getChild('controlBar').el().insertBefore(
-      this.player.getChild('controlBar').getChild('timeDisplay').el(),
+      this.player.getChild('controlBar').getChild('TimeDisplay').el(),
       this.player.getChild('controlBar').getChild('progressControl').el()
     );
 
@@ -580,10 +582,10 @@ class Frames extends Plugin {
 
     const that = this;
 
-    const TimecodeButton = videojs.extend(MenuButton, {
-      constructor() {
+    class TimecodeButton extends MenuButton {
+      constructor(player, options) {
 
-        MenuButton.apply(this, arguments);
+        super(player, options);
 
         this.addClass('vjs-button');
         this.controlText('Timecode');
@@ -602,7 +604,7 @@ class Frames extends Plugin {
 
         menuUL.appendChild(header);
 
-        const options = [{
+        const menuOptions = [{
           title: 'Timecode',
           id: 'SMPTE'
         }, {
@@ -619,15 +621,15 @@ class Frames extends Plugin {
           id: 'time'
         }];
 
-        for (let i = 0; i < options.length; i++) {
+        for (let i = 0; i < menuOptions.length; i++) {
 
           const child = document.createElement('li');
 
           child.className = 'vjs-menu-item';
 
-          child.id = options[i].id;
+          child.id = menuOptions[i].id;
 
-          child.innerHTML = options[i].title + ' <span class="vjs-control-text"></span>';
+          child.innerHTML = menuOptions[i].title + ' <span class="vjs-control-text"></span>';
 
           child.addEventListener('click', function() {
 
@@ -645,16 +647,16 @@ class Frames extends Plugin {
 
         this.el().children[1].appendChild(menuUL);
 
-      },
+      }
       handleClick() {}
-    });
+    }
 
-    videojs.registerComponent('timecodeButton', TimecodeButton);
+    videojs.registerComponent('TimecodeButton', TimecodeButton);
 
-    this.player.getChild('controlBar').addChild('timecodeButton', {});
+    this.player.getChild('controlBar').addChild('TimecodeButton', {});
 
     this.player.getChild('controlBar').el().insertBefore(
-      this.player.getChild('controlBar').getChild('timecodeButton').el(),
+      this.player.getChild('controlBar').getChild('TimecodeButton').el(),
       this.player.getChild('controlBar').getChild('progressControl').el()
     );
 
@@ -668,10 +670,10 @@ class Frames extends Plugin {
 
     this.player.getChild('controlBar').getChild('progressControl').getChild('ClippingBar').hide();
 
-    const ClipButton = videojs.extend(MenuButton, {
-      constructor() {
+    class ClipButton extends MenuButton {
+      constructor(player, options) {
 
-        MenuButton.apply(this, arguments);
+        super(player, options);
 
         this.addClass('vjs-button');
         this.controlText('Clipping');
@@ -690,7 +692,7 @@ class Frames extends Plugin {
 
         menuUL.appendChild(header);
 
-        const options = [{
+        const menuOptions = [{
           title: 'Enable Clipping',
           id: 'enable'
         }, {
@@ -698,15 +700,15 @@ class Frames extends Plugin {
           id: 'restore'
         }];
 
-        for (let i = 0; i < options.length; i++) {
+        for (let i = 0; i < menuOptions.length; i++) {
 
           const child = document.createElement('li');
 
           child.className = 'vjs-menu-item';
 
-          child.id = options[i].id;
+          child.id = menuOptions[i].id;
 
-          child.innerHTML = options[i].title + ' <span class="vjs-control-text"></span>';
+          child.innerHTML = menuOptions[i].title + ' <span class="vjs-control-text"></span>';
 
           child.addEventListener('click', function() {
 
@@ -722,16 +724,16 @@ class Frames extends Plugin {
 
         this.el().children[1].appendChild(menuUL);
 
-      },
+      }
       handleClick() {}
-    });
+    }
 
-    videojs.registerComponent('clipButton', ClipButton);
+    videojs.registerComponent('ClipButton', ClipButton);
 
-    this.player.getChild('controlBar').addChild('clipButton', {});
+    this.player.getChild('controlBar').addChild('ClipButton', {});
 
     this.player.getChild('controlBar').el().insertBefore(
-      this.player.getChild('controlBar').getChild('clipButton').el(),
+      this.player.getChild('controlBar').getChild('ClipButton').el(),
       this.player.getChild('controlBar').getChild('progressControl').el()
     );
 

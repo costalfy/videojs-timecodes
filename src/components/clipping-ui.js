@@ -1,23 +1,23 @@
 
 import videojs from 'video.js';
 
-var Component = videojs.getComponent('Component');
+const Component = videojs.getComponent('Component');
 
-var ClippingBar = videojs.extend(Component, {
+const ClippingBar = videojs.extend(Component, {
 
-    constructor: function(player, options) {
+  constructor(player, options) {
 
-        Component.apply(this, arguments);
+    Component.apply(this, arguments);
 
-    },
+  },
 
-    createEl: function() {
+  createEl() {
 
-        return videojs.dom.createEl('div', {
-            className: 'g-ranger',
-            id: this.player().id() + '_range'
-        });
-    },
+    return videojs.dom.createEl('div', {
+      className: 'g-ranger',
+      id: this.player().id() + '_range'
+    });
+  }
 
 });
 

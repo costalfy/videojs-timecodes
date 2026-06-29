@@ -1,19 +1,17 @@
-/* global videojs */
-
-import videojs from 'video.js';
+/* global videojs, document, HTMLElement */
 
 /* eslint-disable no-underscore-dangle */
 import {
-    BIFParser
+  BIFParser
 } from '../parser.js';
 import {
-    getPointerPosition
+  getPointerPosition
 } from '../util/dom.js';
 
 const defaults = {
-    createBIFImage: Function.prototype,
-    createBIFTime: Function.prototype,
-    template: Function.prototype,
+  createBIFImage: Function.prototype,
+  createBIFTime: Function.prototype,
+  template: Function.prototype
 };
 
 const VjsMouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
@@ -29,69 +27,69 @@ const VjsMouseTimeDisplay = videojs.getComponent('MouseTimeDisplay');
  * @param {function} [options.template]
  */
 export default class BIFMouseTimeDisplay extends VjsMouseTimeDisplay {
-    /**
+  /**
      * Create BIF element.
      *
      * @param {HTMLElement} root
-     * @returns {HTMLElement} BIFElement
+     * @return {HTMLElement} BIFElement
      */
-    static createBIFElement(root, cls) {
-        
-        const BIFElement = document.createElement('div');
+  static createBIFElement(root, cls) {
 
-        BIFElement.className = cls;
+    const BIFElement = document.createElement('div');
 
-        root.appendChild(BIFElement);
+    BIFElement.className = cls;
 
-        return BIFElement;
+    root.appendChild(BIFElement);
 
-    }
+    return BIFElement;
 
-    /**
+  }
+
+  /**
      * Create BIF image element.
      *
-     * @returns {HTMLElement} BIFImage
+     * @return {HTMLElement} BIFImage
      */
-    static createBIFImage(cls) {
+  static createBIFImage(cls) {
 
-        const BIFImage = document.createElement('img');
+    const BIFImage = document.createElement('img');
 
-        BIFImage.className = 'bif-image';
+    BIFImage.className = 'bif-image';
 
-        return BIFImage;
-    
-    }
+    return BIFImage;
 
-    /**
+  }
+
+  /**
      * Create BIF time element.
      *
-     * @returns {HTMLElement} BIFTime
+     * @return {HTMLElement} BIFTime
      */
-    static createBIFTime() {
+  static createBIFTime() {
 
-        const BIFTime = document.createElement('span');
+    const BIFTime = document.createElement('span');
 
-        BIFTime.className = 'bif-time';
+    BIFTime.className = 'bif-time';
 
-        return BIFTime;
+    return BIFTime;
 
-    }
+  }
 
-    constructor(player, options = {}) {
+  constructor(player, options = {}) {
 
-        super(player, options);
+    super(player, options);
 
-        this.BIFElement = BIFMouseTimeDisplay.createBIFElement(player.el(), 'bif-thumbnail');
+    this.BIFElement = BIFMouseTimeDisplay.createBIFElement(player.el(), 'bif-thumbnail');
 
-        this.render(options);
+    this.render(options);
 
-        this.BIFElementSlider = BIFMouseTimeDisplay.createBIFElement(player.el(), 'bif-slider');
+    this.BIFElementSlider = BIFMouseTimeDisplay.createBIFElement(player.el(), 'bif-slider');
 
-        this.renderSlider(options);
+    this.renderSlider(options);
 
-    }
+  }
 
-    /**
+  /**
      * Configures the component with new options. If one of those options is data,
      * then the component attempts to convert that data into usable BIF image previews.
      *
@@ -101,162 +99,162 @@ export default class BIFMouseTimeDisplay extends VjsMouseTimeDisplay {
      * @param {function} [options.createBIFTime]
      * @param {function} [options.template]
      */
-    configure(options) {
-        this.options_ = videojs.mergeOptions(defaults, this.options_, options);
+  configure(options) {
+    this.options_ = videojs.mergeOptions(defaults, this.options_, options);
 
-        const {
-            data
-        } = options;
+    const {
+      data
+    } = options;
 
-        if (data instanceof ArrayBuffer) {
-            this.BIFParser = new BIFParser(data);
-        } else if (data != null) {
-            throw new Error('Invalid BIF data.');
-        }
-
+    if (data instanceof ArrayBuffer) {
+      this.BIFParser = new BIFParser(data);
+    } else if (data !== null && data !== undefined) {
+      throw new Error('Invalid BIF data.');
     }
 
-    /**
+  }
+
+  /**
      * Gets the current BIF image at a specific time in seconds.
      *
      * @param {number} time in seconds
-     * @returns {string} image base64 encoded image
+     * @return {string} image base64 encoded image
      */
-    getCurrentImageAtTime(time) {
+  getCurrentImageAtTime(time) {
 
-        let image;
+    let image;
 
-        if (this.hasImages()) {
-            image = this.BIFParser.getImageDataAtSecond(time);
-        }
-
-        return image;
+    if (this.hasImages()) {
+      image = this.BIFParser.getImageDataAtSecond(time);
     }
 
-    /**
+    return image;
+  }
+
+  /**
      * Gets the current time in seconds based on the mouse position over the `SeekBar`.
      *
      * @param {Event} event
-     * @returns {number} time
+     * @return {number} time
      */
-    getCurrentTimeAtEvent(event) {
+  getCurrentTimeAtEvent(event) {
 
-        const {
-            seekBar
-        } = this.player_.controlBar.progressControl;
+    const {
+      seekBar
+    } = this.player_.controlBar.progressControl;
 
-        const position = getPointerPosition(
-            event,
-            seekBar.el()
-        );
+    const position = getPointerPosition(
+      event,
+      seekBar.el()
+    );
 
-        return position.x * this.player_.duration();
-    }
+    return position.x * this.player_.duration();
+  }
 
-    /**
+  /**
      * Gets the current time in seconds based on the mouse position over the `SeekBar`.
      *
      * @param {Event} event
-     * @returns {number} time
+     * @return {number} time
      */
-    getCurrentOMTimeAtEvent(time) {
+  getCurrentOMTimeAtEvent(time) {
 
-        return (this.player_.duration() / 100 * time);
-    }
+    return (this.player_.duration() / 100 * time);
+  }
 
-    /**
+  /**
      * Event that fires every time the mouse is moved, throttled, over the `ProgressControl`.
      *
      * @param {Event} event
      */
-    handleSliderMove(data) {
+  handleSliderMove(data) {
 
-        if (!data) {
+    if (!data) {
 
-            return;
-
-        }
- 
-        // gets the time in seconds 
-        const time = this.getCurrentOMTimeAtEvent(data.percentage);
-
-        // gets the image
-        const image = this.getCurrentImageAtTime(time);
-
-        if (videojs(this.player().id()).hasClass('video-is-dragging')) {
-
-                this.BIFElementSlider.style.display = 'block';
-        
-        }
-        
-        this.BIFElementSlider.style.left    = (data.left) + 'px';
-
-        if (image) {
-            
-            this.BIFImageSlider.src = image;
-
-        }
+      return;
 
     }
 
-    handleSliderOut() {
+    // gets the time in seconds
+    const time = this.getCurrentOMTimeAtEvent(data.percentage);
 
-        this.BIFElementSlider.style.display = 'none';
+    // gets the image
+    const image = this.getCurrentImageAtTime(time);
 
-    }   
+    if (videojs(this.player().id()).hasClass('video-is-dragging')) {
 
-    handleProgressBarMove(event, parent) {
-
-        if (!event) {
-
-            return;
-
-        }
-
-        // gets the time in seconds
-        const time = this.getCurrentTimeAtEvent(event);
-
-        // gets the image
-        const image = this.getCurrentImageAtTime(time);
-
-        this.BIFElement.style.display = 'block';
-        this.BIFElement.style.left    = (event.offsetX + parent) + 'px';
-
-        if (image) {
-            
-            this.BIFImage.src = image;
-
-        }
-
-        this.BIFTime.innerHTML        = videojs.formatTime(Math.floor(time));
+      this.BIFElementSlider.style.display = 'block';
 
     }
 
-    handleProgressBarOut() {
+    this.BIFElementSlider.style.left = (data.left) + 'px';
 
-        this.BIFElement.style.display = 'none';
+    if (image) {
 
-    }   
-
-    setSliderTime(time){
-
-        this.BIFTimeSlider.innerText = time;
+      this.BIFImageSlider.src = image;
 
     }
 
-    /**
+  }
+
+  handleSliderOut() {
+
+    this.BIFElementSlider.style.display = 'none';
+
+  }
+
+  handleProgressBarMove(event, parent) {
+
+    if (!event) {
+
+      return;
+
+    }
+
+    // gets the time in seconds
+    const time = this.getCurrentTimeAtEvent(event);
+
+    // gets the image
+    const image = this.getCurrentImageAtTime(time);
+
+    this.BIFElement.style.display = 'block';
+    this.BIFElement.style.left = (event.offsetX + parent) + 'px';
+
+    if (image) {
+
+      this.BIFImage.src = image;
+
+    }
+
+    this.BIFTime.innerHTML = videojs.formatTime(Math.floor(time));
+
+  }
+
+  handleProgressBarOut() {
+
+    this.BIFElement.style.display = 'none';
+
+  }
+
+  setSliderTime(time) {
+
+    this.BIFTimeSlider.innerText = time;
+
+  }
+
+  /**
      * Determines the existence of the `BIFParser` which manages the index and all
      * associated images.
      *
-     * @returns {boolean}
+     * @return {boolean}
      */
-    hasImages() {
+  hasImages() {
 
-        return !!this.BIFParser;
-    
-    }
+    return !!this.BIFParser;
 
-    /**
+  }
+
+  /**
      * Renders and rerenders the BIF component. It manages the three main elements
      * of the component—`BIFImage`, `BIFTime`, and the `template`.
      *
@@ -266,126 +264,126 @@ export default class BIFMouseTimeDisplay extends VjsMouseTimeDisplay {
      * @param {function} [options.createBIFTime]
      * @param {function} [options.template]
      */
-    render(options) {
+  render(options) {
 
-        this.configure(options);
+    this.configure(options);
 
-        // create BIF image element
+    // create BIF image element
 
-        const BIFImage = this.options_.createBIFImage.apply(this);
+    const BIFImage = this.options_.createBIFImage.apply(this);
 
-        if (BIFImage instanceof HTMLElement) {
-            this.BIFImage = BIFImage;
-        } else {
-            this.BIFImage = BIFMouseTimeDisplay.createBIFImage();
-        }
-
-        // create BIF time element
-
-        const BIFTime = this.options_.createBIFTime.apply(this);
-
-        if (BIFTime instanceof HTMLElement) {
-            this.BIFTime = BIFTime;
-        } else {
-            this.BIFTime = BIFMouseTimeDisplay.createBIFTime();
-        }
-
-        // create BIF template element
-
-        let template = this.options_.template.apply(this);
-
-        if (!(template instanceof HTMLElement)) {
-            template = this.template();
-        }
-
-        // replace template contents every render
-
-        this.BIFElement.innerHTML = '';
-
-        this.BIFElement.appendChild(template);
-
+    if (BIFImage instanceof HTMLElement) {
+      this.BIFImage = BIFImage;
+    } else {
+      this.BIFImage = BIFMouseTimeDisplay.createBIFImage();
     }
 
-    /**
+    // create BIF time element
+
+    const BIFTime = this.options_.createBIFTime.apply(this);
+
+    if (BIFTime instanceof HTMLElement) {
+      this.BIFTime = BIFTime;
+    } else {
+      this.BIFTime = BIFMouseTimeDisplay.createBIFTime();
+    }
+
+    // create BIF template element
+
+    let template = this.options_.template.apply(this);
+
+    if (!(template instanceof HTMLElement)) {
+      template = this.template();
+    }
+
+    // replace template contents every render
+
+    this.BIFElement.innerHTML = '';
+
+    this.BIFElement.appendChild(template);
+
+  }
+
+  /**
      * The primary template for the component. Typically houses the `BIFImage` and
      * `BIFTime` elements to be styled or altered.
      *
-     * @returns {HTMLElement} template
+     * @return {HTMLElement} template
      */
-    template() {
-        const template = document.createElement('div');
+  template() {
+    const template = document.createElement('div');
 
-        template.className = 'bif';
+    template.className = 'bif';
 
-        // append image element only if the images are ready
-        if (this.hasImages()) {
-            template.appendChild(this.BIFImage);
-        }
-
-        template.appendChild(this.BIFTime);
-
-        return template;
+    // append image element only if the images are ready
+    if (this.hasImages()) {
+      template.appendChild(this.BIFImage);
     }
 
-    renderSlider(options) {
+    template.appendChild(this.BIFTime);
 
-        this.configure(options);
+    return template;
+  }
 
-        // create BIF image element
+  renderSlider(options) {
 
-        const BIFImageSlider = this.options_.createBIFImage.apply(this);
+    this.configure(options);
 
-        if (BIFImageSlider instanceof HTMLElement) {
-            this.BIFImageSlider = BIFImageSlider;
-        } else {
-            this.BIFImageSlider = BIFMouseTimeDisplay.createBIFImage();
-        }
+    // create BIF image element
 
-        // create BIF time element
+    const BIFImageSlider = this.options_.createBIFImage.apply(this);
 
-        const BIFTimeSlider = this.options_.createBIFTime.apply(this);
-
-        if (BIFTimeSlider instanceof HTMLElement) {
-            this.BIFTimeSlider = BIFTimeSlider;
-        } else {
-            this.BIFTimeSlider = BIFMouseTimeDisplay.createBIFTime();
-        }
-
-        // create BIF template element
-
-        let template = this.options_.template.apply(this);
-
-        if (!(template instanceof HTMLElement)) {
-            template = this.templateSlider();
-        }
-
-        // replace template contents every render
-
-        this.BIFElementSlider.innerHTML = '';
-
-        this.BIFElementSlider.appendChild(template);
-
+    if (BIFImageSlider instanceof HTMLElement) {
+      this.BIFImageSlider = BIFImageSlider;
+    } else {
+      this.BIFImageSlider = BIFMouseTimeDisplay.createBIFImage();
     }
 
-    /**
+    // create BIF time element
+
+    const BIFTimeSlider = this.options_.createBIFTime.apply(this);
+
+    if (BIFTimeSlider instanceof HTMLElement) {
+      this.BIFTimeSlider = BIFTimeSlider;
+    } else {
+      this.BIFTimeSlider = BIFMouseTimeDisplay.createBIFTime();
+    }
+
+    // create BIF template element
+
+    let template = this.options_.template.apply(this);
+
+    if (!(template instanceof HTMLElement)) {
+      template = this.templateSlider();
+    }
+
+    // replace template contents every render
+
+    this.BIFElementSlider.innerHTML = '';
+
+    this.BIFElementSlider.appendChild(template);
+
+  }
+
+  /**
      * The primary template for the component. Typically houses the `BIFImage` and
      * `BIFTime` elements to be styled or altered.
      *
-     * @returns {HTMLElement} template
+     * @return {HTMLElement} template
      */
-    templateSlider() {
-        const template = document.createElement('div');
+  templateSlider() {
+    const template = document.createElement('div');
 
-        template.className = 'bif';
+    template.className = 'bif';
 
-        // append image element only if the images are ready
-        if (this.hasImages()) {
-            template.appendChild(this.BIFImageSlider);
-        }
-
-        template.appendChild(this.BIFTimeSlider);
-
-        return template;
+    // append image element only if the images are ready
+    if (this.hasImages()) {
+      template.appendChild(this.BIFImageSlider);
     }
+
+    template.appendChild(this.BIFTimeSlider);
+
+    return template;
+  }
 
 }

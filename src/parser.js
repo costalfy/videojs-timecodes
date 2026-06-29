@@ -1,3 +1,5 @@
+/* global btoa */
+
 // Offsets
 
 export const BIF_INDEX_OFFSET = 64;
@@ -19,13 +21,13 @@ export const MAGIC_NUMBER = new Uint8Array([
   '0x0d',
   '0x0a',
   '0x1a',
-  '0x0a',
+  '0x0a'
 ]);
 
 /**
  * Validate the file identifier against the magic number.
  *
- * @returns {boolean} isValid
+ * @return {boolean} isValid
  */
 function validate(magicNumber) {
   let isValid = true;
@@ -79,7 +81,7 @@ export class BIFParser {
    * Create the BIF index
    * SEE: https://sdkdocs.roku.com/display/sdkdoc/Trick+Mode+Support#TrickModeSupport-BIFindex
    *
-   * @returns {Array} bifIndex
+   * @return {Array} bifIndex
    */
   generateBIFIndex() {
     const bifIndex = [];
@@ -108,7 +110,7 @@ export class BIFParser {
         offset,
         timestamp,
 
-        length: nextOffset - offset,
+        length: nextOffset - offset
       });
     }
 
@@ -119,7 +121,7 @@ export class BIFParser {
    * Return image data for a specific frame of a movie.
    *
    * @param {number} second
-   * @returns {string} imageData
+   * @return {string} imageData
    */
   getImageDataAtSecond(second) {
 
@@ -135,7 +137,7 @@ export class BIFParser {
       return image;
     }
 
-    const base64 = btoa(new Uint8Array(this.arrayBuffer.slice(frame.offset, frame.offset + frame.length)).reduce(function (data, byte) {
+    const base64 = btoa(new Uint8Array(this.arrayBuffer.slice(frame.offset, frame.offset + frame.length)).reduce(function(data, byte) {
       return data + String.fromCharCode(byte);
     }, ''));
 

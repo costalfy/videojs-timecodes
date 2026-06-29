@@ -1,3 +1,5 @@
+/* global document, window */
+
 /**
  * @typedef {Object} Point
  * @property {number} x
@@ -14,13 +16,13 @@
  * SEE: https://github.com/videojs/video.js/blob/4f6cb03adde9ddf800e2ecf6fa87b07d436b74e8/src/js/utils/dom.js#L438
  *
  * @param {HTMLElement} element
- * @returns {Offset}
+ * @return {Offset}
  */
 export function getElementPosition(element) {
 
   let elementPosition = {
     left: 0,
-    top: 0,
+    top: 0
   };
 
   if (element.getBoundingClientRect && element.parentNode) {
@@ -29,7 +31,7 @@ export function getElementPosition(element) {
 
   const {
     body,
-    documentElement,
+    documentElement
   } = document;
 
   const clientLeft = documentElement.clientLeft || body.clientLeft || 0;
@@ -41,7 +43,7 @@ export function getElementPosition(element) {
   // Android sometimes returns slightly off decimal values, so need to round
   return {
     left: Math.round(elementPosition.left + (scrollLeft - clientLeft)),
-    top: Math.round(elementPosition.top + (scrollTop - clientTop)),
+    top: Math.round(elementPosition.top + (scrollTop - clientTop))
   };
 }
 
@@ -50,7 +52,7 @@ export function getElementPosition(element) {
  *
  * @param {Event} event
  * @param {HTMLElement} element
- * @returns {Point}
+ * @return {Point}
  */
 export function getPointerPosition(event, element) {
 
@@ -59,20 +61,16 @@ export function getPointerPosition(event, element) {
   const elementWidth = element.offsetWidth;
   const elementHeight = element.offsetHeight;
 
-  let {
-    pageX,
-    pageY,
-  } = event;
+  let pageX = event.pageX;
+  let pageY = event.pageY;
 
   if (event.changedTouches) {
-    ({
-      pageX,
-      pageY,
-    } = event.changedTouches[0]);
+    pageX = event.changedTouches[0].pageX;
+    pageY = event.changedTouches[0].pageY;
   }
 
   return {
-    x: Math.max(0, Math.min(1, (event.pageX - elementPosition.left) / elementWidth)),
-    y: Math.max(0, Math.min(1, ((elementPosition.top - event.pageY) + elementHeight) / elementHeight)),
+    x: Math.max(0, Math.min(1, (pageX - elementPosition.left) / elementWidth)),
+    y: Math.max(0, Math.min(1, ((elementPosition.top - pageY) + elementHeight) / elementHeight))
   };
 }

@@ -7,7 +7,7 @@ import {
 import './components/clipping-ui.js';
 import noUiSlider from '../node_modules/nouislider/distribute/nouislider.js';
 
-import { BIFParser } from './parser.js';
+/* global XMLHttpRequest, document, vis, $ */
 
 import bifMouseTimeDisplay from './components/bif-mouse-time-display.js';
 
@@ -23,8 +23,6 @@ vjsSeekBarChildren.splice(mouseTimeDisplayIndex, 1, 'BIFMouseTimeDisplay');
 
 const Plugin = videojs.getPlugin('plugin');
 const MenuButton = videojs.getComponent('MenuButton');
-const Menu = videojs.getComponent('Menu');
-const Component = videojs.getComponent('Component');
 
 // Default options for the plugin.
 const defaults = {
@@ -75,8 +73,6 @@ class Frames extends Plugin {
 
       this.player.addClass('vjs-frames');
 
-      const that = this;
-
       // ACTION FRAMERATE IF SET
       if (this.options.frameRate) {
 
@@ -117,8 +113,6 @@ class Frames extends Plugin {
   }
 
   initTimecode() {
-
-    console.log('framerate');
 
     // Hide the remaining time replaced by timecode
     this.player.getChild('controlBar').getChild('remainingTimeDisplay').hide();
@@ -233,7 +227,8 @@ class Frames extends Plugin {
 
     const total = (this.player.duration() * 1000);
 
-    const gDate = '1970-01-01 00:00:00 GMT'; // Needs to be the begining of the date object
+    // Needs to be the beginning of the date object
+    const gDate = '1970-01-01 00:00:00 GMT';
 
     const request = new XMLHttpRequest();
 
@@ -298,11 +293,12 @@ class Frames extends Plugin {
         groupOrder(a, b) {
           return a.value - b.value;
         },
-        groupOrderSwap(a, b, groups) {
+        groupOrderSwap(a, b, groupsParam) {
           const v = a.value;
 
           a.value = b.value;
           b.value = v;
+          groupsParam.update([a, b]);
         },
         /* groupTemplate: function(group){
                   var container = document.createElement('div');
@@ -319,13 +315,12 @@ class Frames extends Plugin {
                   return container;
                 },*/
         orientation: 'both',
-        editable: true,
+        editable: false,
         groupEditable: true,
         start: new Date(gDate),
         end: last,
         min: new Date(gDate),
         max: last,
-        editable: false,
         showMajorLabels: false,
         // showCurrentTime: false,
         format: {
@@ -334,15 +329,16 @@ class Frames extends Plugin {
             switch (scale) {
             case 'millisecond':
               return new Date(date).getTime() + 'ms';
-            case 'second':
-              var seconds = Math.round(new Date(date).getTime() / 1000);
+            case 'second': {
+              const seconds = Math.round(new Date(date).getTime() / 1000);
 
               return seconds + 's';
-            case 'minute':
-              var minutes = Math.round(new Date(date).getTime() / 1000 * 60);
+            }
+            case 'minute': {
+              const minutes = Math.round(new Date(date).getTime() / 1000 * 60);
 
               return minutes + 'm';
-              break;
+            }
             default:
 
             }
@@ -365,7 +361,7 @@ class Frames extends Plugin {
 
       timeline.addCustomTime(marker, 1);
 
-      this.on(this.player, ['timeupdate'], function(event) {
+      this.on(this.player, ['timeupdate'], function() {
 
         const time = this.player.currentTime();
         const marker2 = new Date(gDate);
@@ -416,8 +412,6 @@ class Frames extends Plugin {
 
   createMetaNetwork() {
 
-    const nodes = [];
-    const edges = null;
     let network = null;
 
     const request = new XMLHttpRequest();
@@ -454,11 +448,10 @@ class Frames extends Plugin {
       // Instantiate our network object.
       const container = document.getElementById('mynetwork');
 
-      const nodes = new vis.DataSet(setItems);
+      const networkNodes = new vis.DataSet(setItems);
 
       const data = {
-        nodes
-        // edges: edges
+        nodes: networkNodes
       };
       const options = {
         nodes: {
@@ -515,7 +508,7 @@ class Frames extends Plugin {
       network.on('click', function(properties) {
 
         const ids = properties.nodes;
-        const clickedNodes = nodes.get(ids);
+        const clickedNodes = networkNodes.get(ids);
         // console.log('I\'m clicked',clickedNodes );
 
         const children = clickedNodes[0];
@@ -535,8 +528,8 @@ class Frames extends Plugin {
 
           }
 
-          nodes.clear();
-          nodes.update(newItems);
+          networkNodes.clear();
+          networkNodes.update(newItems);
 
           network.redraw();
 
@@ -547,8 +540,6 @@ class Frames extends Plugin {
     };
 
     request.send(null);
-
-    return;
 
   }
 
@@ -628,10 +619,7 @@ class Frames extends Plugin {
           id: 'time'
         }];
 
-        let i;
-        const classIndex = 100;
-
-        for (i = 0; i < options.length; i++) {
+        for (let i = 0; i < options.length; i++) {
 
           const child = document.createElement('li');
 
@@ -676,8 +664,6 @@ class Frames extends Plugin {
 
     const that = this;
 
-    console.log('createClippingMenu');
-
     this.player.getChild('controlBar').getChild('progressControl').addChild('ClippingBar', {text: ''});
 
     this.player.getChild('controlBar').getChild('progressControl').getChild('ClippingBar').hide();
@@ -712,10 +698,7 @@ class Frames extends Plugin {
           id: 'restore'
         }];
 
-        let i;
-        const classIndex = 100;
-
-        for (i = 0; i < options.length; i++) {
+        for (let i = 0; i < options.length; i++) {
 
           const child = document.createElement('li');
 
@@ -797,7 +780,7 @@ class Frames extends Plugin {
 
     slider.noUiSlider.on('update', function(ind, ui, event) {
 
-      const percentage = Math.floor((event[ui] / parseInt(that.totalFrames())) * 100);
+      const percentage = Math.floor((event[ui] / parseInt(that.totalFrames(), 10)) * 100);
 
       that.player.pause();
 
@@ -807,11 +790,6 @@ class Frames extends Plugin {
       BIFMouseTimeDisplay.handleSliderMove({
         left: (ui === 0) ? Math.floor(lower + 10) : Math.floor(upper + 10),
         percentage
-      });
-
-      console.log({
-        frame: Math.round(event[ui]),
-        ui
       });
 
       that.seekTo({
@@ -896,8 +874,6 @@ class Frames extends Plugin {
 
       return;
 
-      break;
-
     default:
 
       return;
@@ -964,7 +940,6 @@ class Frames extends Plugin {
 
       return this.toSMPTE();
 
-      break;
     case 'time':
 
       this.player.getChild('controlBar').getChild('timeDisplay').el().innerText = this.toTime();
@@ -973,7 +948,6 @@ class Frames extends Plugin {
 
       return this.toTime();
 
-      break;
     case 'frames':
 
       this.player.getChild('controlBar').getChild('timeDisplay').el().innerText = this.toFrames();
@@ -982,7 +956,6 @@ class Frames extends Plugin {
 
       return this.toFrames();
 
-      break;
     case 'seconds':
 
       this.player.getChild('controlBar').getChild('timeDisplay').el().innerText = this.toSeconds();
@@ -991,7 +964,6 @@ class Frames extends Plugin {
 
       return this.toSeconds();
 
-      break;
     case 'milliseconds':
 
       this.player.getChild('controlBar').getChild('timeDisplay').el().innerText = this.toMilliseconds();
@@ -999,8 +971,6 @@ class Frames extends Plugin {
       BIFMouseTimeDisplay.setSliderTime(this.toMilliseconds());
 
       return this.toMilliseconds();
-
-      break;
     default:
 
       return this.toTime();
@@ -1058,7 +1028,7 @@ class Frames extends Plugin {
     const frameRate = this.options.frameRate;
 
     const dt = (new Date());
-    const format = 'hh:mm:ss' + (typeof frames === 'number' ? ':ff' : '');
+    const timeFormat = 'hh:mm:ss' + (typeof frames === 'number' ? ':ff' : '');
 
     dt.setHours(0);
 
@@ -1072,7 +1042,7 @@ class Frames extends Plugin {
       return ((n < 10) ? '0' + n : n);
     }
 
-    return format.replace(/hh|mm|ss|ff/g, function(format) {
+    return timeFormat.replace(/hh|mm|ss|ff/g, function(format) {
       switch (format) {
       case 'hh':
         return wrap(dt.getHours() < 13 ? dt.getHours() : (dt.getHours() - 12));
@@ -1259,7 +1229,7 @@ class Frames extends Plugin {
     /** Only allow one option to be passed */
     const option = Object.keys(obj)[0];
 
-    if (option == 'SMPTE' || option == 'time') {
+    if (option === 'SMPTE' || option === 'time') {
 
       SMPTE = obj[option];
 
@@ -1270,8 +1240,6 @@ class Frames extends Plugin {
       return;
 
     }
-
-    console.log('obj', obj);
 
     switch (option) {
 

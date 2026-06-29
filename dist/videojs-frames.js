@@ -1,4 +1,4 @@
-/*! @name videojs-frames @version 0.0.4 @license MIT */
+/*! @name videojs-frames @version 0.1.0 @license MIT */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('video.js')) :
   typeof define === 'function' && define.amd ? define(['video.js'], factory) :
@@ -9,7 +9,7 @@
 
   var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
 
-  var version = "0.0.4";
+  var version = "0.1.0";
 
   const Component = videojs__default["default"].getComponent('Component');
   class ClippingBar extends Component {

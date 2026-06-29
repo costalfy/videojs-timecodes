@@ -1,4 +1,4 @@
-/*! @name videojs-frames @version 0.0.4 @license MIT */
+/*! @name videojs-frames @version 0.1.0 @license MIT */
 'use strict';
 
 var videojs = require('video.js');
@@ -7,7 +7,7 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 
 var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
 
-var version = "0.0.4";
+var version = "0.1.0";
 
 const Component = videojs__default["default"].getComponent('Component');
 class ClippingBar extends Component {

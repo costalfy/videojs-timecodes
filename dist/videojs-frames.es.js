@@ -1,7 +1,7 @@
-/*! @name videojs-frames @version 0.0.4 @license MIT */
+/*! @name videojs-frames @version 0.1.0 @license MIT */
 import videojs from 'video.js';
 
-var version = "0.0.4";
+var version = "0.1.0";
 
 const Component = videojs.getComponent('Component');
 class ClippingBar extends Component {
